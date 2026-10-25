@@ -1,5 +1,7 @@
 package src.Codegen;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import src.AST.PrototypeAST;
 import src.AST.Value;
 import src.Parser.ZType;
@@ -12,6 +14,8 @@ import java.util.Map;
  * Class with helper methods to generate LLVM IR code using testual strings
  */
 public class IRBuilder {
+    private static final Logger logger = LoggerFactory.getLogger(IRBuilder.class);
+
     /**
      * registerCount stores the next available register (es. %1)
      * irCode is the StringBuilder for the code
@@ -157,8 +161,22 @@ public class IRBuilder {
 
     public void emitReturn(final Value value) {
         final ZType targetType = returnType;
+        if (returnType == ZType.VOID) {
+            appendLine("ret void");
+            terminated = true;
+            return;
+        }
+
+        if (value == null) { // it must be main
+            appendLine("ret i32 281");
+            terminated = true;
+            return;
+        }
+
+
         final String target = targetType.llvm();
         final String from = value.type().llvm();
+
         if (from.equals(target)) {
             appendLine("ret " + target + " " + value.text());
             terminated = true;
@@ -166,7 +184,7 @@ public class IRBuilder {
         }
 
         if (from.equals("ptr") || target.equals("ptr")) {
-            System.err.println("Error: cannot convert between " + from + " and " + target);
+            logger.error("Error: cannot convert between {} and {}", from, target);
             markFailed();
             return;
         }
@@ -174,13 +192,13 @@ public class IRBuilder {
         // str is an i8*. It is not a number, and the conversion opcodes
         // below would produce invalid IR for it.
         if (from.equals("i8*") || target.equals("i8*")) {
-            System.err.println("Error: cannot convert between str and " + (from.equals("i8*") ? target : from));
+            logger.error("Error: cannot convert between str and {} ",(from.equals("i8*") ? target : from));
             markFailed();
             return;
         }
         final String opcode = conversionOpcode(value.type(), targetType);
         if (opcode == null) {
-            System.err.println("Error: cannot convert between " + from + " and " + target);
+            logger.error("Error: cannot convert between {} and {}", from, target);
             markFailed();
             return;
         }

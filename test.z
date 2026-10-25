@@ -1,9 +1,11 @@
-import library
 extern printf(str | ...) -> int32
 
+proc test() -> void {
+    printf("test")
+    ret
+}
+
 proc main() {
-    int32 test2 -> printf("test")
-    int32 test -> library.math(60)
-    int32 prova -> library.global
-    ret test + prova
+    test()
+    ret 61
 }

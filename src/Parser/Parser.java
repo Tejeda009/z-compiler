@@ -539,6 +539,9 @@ public class Parser {
      */
     public final ExprAST parseRet() throws IOException {
         next();
+        if (curTok == Lexer.Tokens.CLOSE_FUNC.value) {
+            return new RetAST(ZType.VOID);
+        }
         final ExprAST rightSide = parseExpression();
         if (rightSide == null) return null;
 
@@ -885,9 +888,9 @@ public class Parser {
             if (returnType == null) {
                 return error("Expected return type after '->', got " + describeToken(curTok) + " instead");
             }
-            if (returnType.isVoid()) {
+            /*if (returnType.isVoid()) {
                 return error("A function cannot return void");
-            }
+            }*/
             next();
         }
 
