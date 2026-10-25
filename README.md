@@ -45,7 +45,7 @@ Z_BENCH_REPEATS=15 ./run.sh # compares Z against C (clang -O3)
 
 | Channel | Trigger | Published as |
 | ------- | ------- | ------------ |
-| **Nightly** | every night at 03:00 UTC (or manually) | rolling prerelease [`nightly`](https://github.com/the-big-zed/z-compiler/releases/tag/nightly), image `ghcr.io/the-big-zed/z-compiler:nightly` |
+| **Nightly** | every night at 03:00 UTC (skipped when `nightly` already points at `main`; manual runs can force) | rolling prerelease [`nightly`](https://github.com/the-big-zed/z-compiler/releases/tag/nightly), image `ghcr.io/the-big-zed/z-compiler:nightly` |
 | **Staging** | tag `v1.2.0-rc.1` | prerelease on the tag, image `ghcr.io/the-big-zed/z-compiler:rc` |
 | **Production** | tag `v1.2.0` | release marked *latest* with a provenance attestation, images `:1.2.0` and `:latest` |
 

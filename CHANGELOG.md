@@ -1,0 +1,194 @@
+# Changelog
+
+All notable changes to Z-Compiler are documented in this file.
+
+## [0.0.5-rc.1] - 2026-10-25
+
+### Features
+
+- Added tests
+- Add void support and 281 easter egg
+- Add codecov project checks
+- Add codecov config
+- Add examples section to README
+
+### Bug Fixes
+
+- Fix formatting in README.md
+
+## [0.0.4-rc.1] - 2026-10-25
+
+### Features
+
+- Add block scoping regression tests
+- Added examples and tests
+- Added support for varargs in extern functions
+
+### Bug Fixes
+
+- Fix block scoping
+- Bug fixes and added tests
+
+### Refactoring
+
+- Renamed lexer package Lexer
+
+### Other Changes
+
+- Fk
+- Nothing
+- Array implementation: indexing (only supports numbers, no expressions). TODO: finish AST, add support for expressions when indexing
+- Array implementation: indexing (only supports numbers, no expressions). TODO: finish AST, add support for expressions when indexing
+- Array implementation: arrayDepth (for matrixes) support for Parser and analog changes in ArrayAST class. TODO: finish AST, and add array indexing
+- Array implementation: Declaration parsing and ArrayAST template. TODO: finish AST, and add array indexing
+- Simone zotti 281 aura sigma zotttttttt
+
+## [0.0.3-rc.1] - 2026-10-24
+
+### Features
+
+- Add benchmarks section to README
+
+### Bug Fixes
+
+- Bug fixes, operators and benchmarks
+- Fix #94: add Go-style pointer parameters
+
+### Other Changes
+
+- Correct 'benchmakrks' to 'benchmarks'
+
+## [0.0.2-rc.1] - 2026-10-23
+
+### Bug Fixes
+
+- Fix?
+- Fix #97: add declared return types, including str
+
+### Other Changes
+
+- I'm a complete idiot
+- Is it done now?
+- Should be done
+- Partial implementation
+- Hopefully a fix
+
+## [1.2.0-rc.1] - 2026-10-19
+
+### Tests
+
+- Tests and bug fixes
+
+### Features
+
+- Add deployements
+- Added logging, fixed bugs and IDE warnings, comments
+- Add GitHub Actions workflow for greetings
+- Added tests and fixed bugs for binding extern functions
+- Added untested benchmarks
+- Implemented benchmark system and reassignment of variables.
+- Add Lexer documentation
+- Add permissions to workflows to fix security notification
+- Added tests for constant, revised constant codegen
+- Adding Javdocs literally everywhere
+- Adding final keyword here and there
+- Added simple test for codegen
+- Add cn constant token, AST node, parser and tests
+- Add cn constant token, AST node, parser and tests
+- Add CODEOWNERS file with Tejeda009 as owner
+- Add code of conduct for Z Compiler community
+- Add pull request template for contributions
+- Add feature request issue template
+- Add contribution guidelines to CONTRIBUTING.md
+- Add GNU Lesser General Public License
+- Add GitHub Super Linter workflow
+- Add CodeQL analysis workflow configuration
+- Add stale.yml workflow for managing stale issues and PRs
+- Add GitHub Actions workflow for Linux binary release
+- Add CI workflow for Java build and test
+- Add initial Maven POM configuration
+- Add Discord link to README
+
+### Bug Fixes
+
+- Fixed CI/CD????? idk
+- Fix #85: add string literals and concatenation
+- Fix #63: add uint32, uint64 and str types
+- Fix #2: add if/eif/else conditional statements
+- Bug fixes, test fixes, added tests
+- Fix #24: add for loop support
+- Fix formatting and punctuation in lexer documentation
+- Fix #42: parse parameter types and generate correct call IR
+- Fix #49: emit alloca for variable declarations and use i32 for integer returns
+- Fix bugs, add test
+- Bug fixes, scaffolding for types. almost done variables implementation
+- Bug fixes and scaffolding for next implementations
+- Bug fixes. ig it was already fixed lol
+- Bug fixes and hopefully a parser implementation
+- Fix lexer tokenization, assignment operator, and comments
+
+### Refactoring
+
+- Move everything to src
+
+### Documentation
+
+- Docs: add lexer documentation
+
+### CI/CD & Build
+
+- Ci: bump the github-actions group with 2 updates
+- CI/CD, formatting
+
+### Maintenance
+
+- Deps: bump the maven-minor-and-patch group with 4 updates
+
+### Other Changes
+
+- Bait
+- Hopefully a fix
+- Finally a working linking system Co-authored-by: my stupid brain
+- Bump kotlin.version from 2.4.0 to 2.4.21
+- Really partial implementation
+- Clang circuit breaker fix
+- Finally fucking done it (i hope so)
+- Ik this doesn't work
+- Complete refactoring, file division, cleaned code, bug fixing
+- Gitignore fix for build artifacts
+- Delete src/lexer/lexer-docs.md
+- Delete z-compiler.iml
+- Aura opt tools
+- Fk merge conflicts again
+- Fk merge conflicts
+- Restore Javadoc on PrototypeAST after refactor
+- Remove useless AST.iml
+- Codegen bug fixes and partial implementation
+- Wth is happening git?
+- Fk tests and whitespaces
+- Nothing seems to work, just how i like it
+- Scaffolding for types, almost implementation of variables with stack allocation
+- Bump org.junit:junit-bom from 5.11.0 to 6.1.3
+- It can't be so difficult
+- Why in the world maven?
+- Basic CLI support
+- Files
+- Files
+- Main Implementation with CLang. CodeGen for functions without types and simple binary operations. Bug fixes
+- Scaffolding for code generation
+- Update README.md
+- Handle unknown error case in Parser
+- Create codebase improvement issue template
+- Create bug report issue template
+- Revise vulnerability reporting instructions in SECURITY.md
+- Bump org.graalvm.buildtools:native-maven-plugin from 0.10.1 to 1.1.14
+- Bump org.apache.maven.plugins:maven-surefire-plugin from 3.2.5 to 3.6.0
+- Bump org.apache.maven.plugins:maven-jar-plugin from 3.3.0 to 3.5.1
+- Create dependabot.yml
+- Remove unused import statement from Main.java
+- Update sourceDirectory in pom.xml
+- Ik it doesn't work. it's unfinished
+- Nothing special
+- May be a partial lexer
+- Idk what this shit is
+- Lexer ig

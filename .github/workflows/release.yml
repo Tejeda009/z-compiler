@@ -33,7 +33,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?(-[0-9A-Za-z.-]+)?$ ]]; then
+          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
             echo "::error::Tag '$GITHUB_REF_NAME' is not a semantic version tag (expected vMAJOR.MINOR.PATCH)."
             exit 1
           fi
@@ -61,6 +61,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      security-events: write
 
   publish:
     name: Publish the GitHub release
@@ -85,7 +86,9 @@ jobs:
         with:
           subject-path: |
             dist/z-linux-amd64
+            dist/z-linux-arm64
             dist/z-compiler.jar
+            dist/z-compiler-sbom.json
 
       - name: Publish
         uses: softprops/action-gh-release@v3
@@ -99,5 +102,7 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             dist/z-linux-amd64
+            dist/z-linux-arm64
             dist/z-compiler.jar
+            dist/z-compiler-sbom.json
             dist/SHA256SUMS.txt
