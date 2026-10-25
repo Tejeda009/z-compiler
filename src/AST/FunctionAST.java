@@ -76,7 +76,7 @@ public final class FunctionAST extends ExprAST {
         }
 
         if (!builder.isTerminated()) {
-            if (!isMain) {
+            if (!isMain && returnType() != ZType.VOID) {
                 logger.error("Error: '{}' can reach the end without returning" , proto.name());
                 builder.markFailed();
                 builder.symbols().exitScope();
@@ -84,12 +84,7 @@ public final class FunctionAST extends ExprAST {
             }
             final ZType ret = returnType();
             final String zero;
-            if (ret.isVoid()) {
-                logger.error("Error: cannot produce a default return for '{}'", ret.zName());
-                builder.markFailed();
-                builder.symbols().exitScope();
-                return null;
-            } else if (ret.isBoolean()) {
+            if (ret.isBoolean()) {
                 zero = "i1 false";
             } else if (ret.isString()) {
                 zero = "i8* null";
@@ -99,6 +94,8 @@ public final class FunctionAST extends ExprAST {
                 zero = ret.llvm() + " 0.0";
             } else if (ret.isIntegral()) {
                 zero = ret.llvm() + " 0";
+            } else if (ret.isVoid() ){
+                zero = "void";
             } else {
                 logger.error("Error: cannot produce a default return for '{}'", ret.zName());
                 builder.markFailed();
