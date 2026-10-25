@@ -23,6 +23,9 @@
 ## Examples
 Example files can be found in the [examples folder](./examples/)
 
+## Documentation
+Documentation about how the compiler works can be found in the [docs folder](./docs/)
+
 ## Changelog
 Changelogs can be found in the [changelog file](./CHANGELOG.md)
 
