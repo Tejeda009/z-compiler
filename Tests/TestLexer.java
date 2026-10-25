@@ -239,6 +239,44 @@ public class TestLexer {
     }
 
     @Test
+    void testMultiLineComment() throws IOException {
+        final Lexer lex = new Lexer(new ByteArrayInputStream(
+                "/* first line\n * second line\n */ ret".getBytes(StandardCharsets.UTF_8)));
+
+        assertEquals(Lexer.Tokens.RET.value, lex.getTok());
+        assertEquals(Lexer.Tokens.EOF.value, lex.getTok());
+    }
+
+    @Test
+    void testMultiLineCommentBetweenTokens() throws IOException {
+        final Lexer lex = new Lexer(new ByteArrayInputStream(
+                "ret /* a * b / c **/ 281".getBytes(StandardCharsets.UTF_8)));
+
+        assertEquals(Lexer.Tokens.RET.value, lex.getTok());
+        assertEquals(Lexer.Tokens.NUMBER.value, lex.getTok());
+        assertEquals(281, lex.numVal);
+    }
+
+    @Test
+    void testUnterminatedMultiLineComment() throws IOException {
+        final Lexer lex = new Lexer(new ByteArrayInputStream(
+                "ret /* never closed *".getBytes(StandardCharsets.UTF_8)));
+
+        assertEquals(Lexer.Tokens.RET.value, lex.getTok());
+        assertEquals(Lexer.Tokens.EOF.value, lex.getTok());
+    }
+
+    @Test
+    void testSlashIsStillDivision() throws IOException {
+        final Lexer lex = new Lexer(new ByteArrayInputStream(
+                "a / b".getBytes(StandardCharsets.UTF_8)));
+
+        assertEquals(Lexer.Tokens.IDENTIFIER.value, lex.getTok());
+        assertEquals(Lexer.Tokens.DIV.value, lex.getTok());
+        assertEquals(Lexer.Tokens.IDENTIFIER.value, lex.getTok());
+    }
+
+    @Test
     void testUnknownCharacterIsItsAsciiCode() throws IOException {
         final Lexer lex = new Lexer(new ByteArrayInputStream(
                 "@".getBytes(StandardCharsets.UTF_8)));

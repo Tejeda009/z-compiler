@@ -276,6 +276,24 @@ public class Lexer {
                 return getTok();
             }
 
+            // Multi-line comments
+            if (lastChar == '*') {
+                read();
+                int previous = 0;
+                while (lastChar != -1 && !(previous == '*' && lastChar == '/')) {
+                    previous = lastChar;
+                    read();
+                }
+
+                if (lastChar == -1) {
+                    logger.error("Error: unterminated comment");
+                    return Tokens.EOF.value;
+                }
+
+                read();  // consume closing slash
+                return getTok();
+            }
+
             return Tokens.DIV.value;
         }
 
