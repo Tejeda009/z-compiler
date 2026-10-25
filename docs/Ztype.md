@@ -133,4 +133,3 @@ and assigns the values to the appropriate fields.
 ##### `other(ZType a, ZType b)`
 * **Purpose:** Returns the name of the other operand's type.
 * **Why:** Helps construct error messages when certain type combinations are invalid.
-
