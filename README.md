@@ -22,7 +22,6 @@
 ## Examples
 Example files can be found in the [examples folder](./examples/)
 
-
 ## Development
 
 ```sh
