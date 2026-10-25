@@ -32,15 +32,21 @@ public final class BlockAST extends ExprAST {
 
     @Override
     public @Nullable Value codeGen(final IRBuilder builder) {
-        for (final ExprAST statement : statements) {
-            if (builder.isTerminated()) {
-                logger.error("Error: this statement is unreachable, " + "the block has already returned");
-                builder.markFailed();
-                return null;
+
+        builder.symbols().enterScope();
+        try {
+            for (final ExprAST statement : statements) {
+                if (builder.isTerminated()) {
+                    logger.error("Error: this statement is unreachable, the block has already returned");
+                    builder.markFailed();
+                    return null;
+                }
+                statement.codeGen(builder);
+                if (builder.hasFailed()) return null;
             }
-            statement.codeGen(builder);
-            if (builder.hasFailed()) return null;
+            return null;
+        } finally {
+            builder.symbols().exitScope();
         }
-        return null;
     }
 }
