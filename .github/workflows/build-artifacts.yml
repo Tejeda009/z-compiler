@@ -103,7 +103,7 @@ jobs:
       - name: Scan the SBOM for vulnerabilities
         if: matrix.arch == 'amd64'
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.36.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: sbom
           scan-ref: dist/z-compiler-sbom.json
@@ -262,7 +262,7 @@ jobs:
 
       - name: Scan the container image
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.36.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ steps.scan-ref.outputs.ref }}
           format: sarif
