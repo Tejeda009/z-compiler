@@ -1,1 +1,9 @@
-extern
+extern printf(str | ...) -> int32
+extern scanf(str | ...) -> int32
+
+proc main() {
+    int32 test
+    scanf("%d" | &test)
+    printf("%d" | test)
+    ret test
+}
