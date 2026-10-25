@@ -6,7 +6,7 @@ import src.AST.FunctionAST;
 import src.AST.Value;
 import src.Codegen.IRBuilder;
 import src.Parser.Parser;
-import src.lexer.Lexer;
+import src.Lexer.Lexer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

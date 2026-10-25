@@ -1,4 +1,4 @@
-package src.lexer;
+package src.Lexer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
