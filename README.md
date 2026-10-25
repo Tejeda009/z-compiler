@@ -17,7 +17,7 @@
     <a href="https://codecov.io/gh/the-big-zed/z-compiler"><img src="https://codecov.io/gh/the-big-zed/z-compiler/branch/main/graph/badge.svg" alt="Codecov"></a>
   </p>
 
-  <h1><a href="https://discord.gg/HzDX5HSwP"><b>Discord</b></a></h1>
+  <h1><a href="https://discord.gg/hmAYfCkfz"><b>Discord</b></a></h1>
 </div>
 
 ## Examples
