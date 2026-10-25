@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '0 3 * * *'
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Build even if the nightly tag already points at the current commit"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -13,8 +18,45 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  check:
+    name: Check for new commits
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check the nightly tag
+        id: check
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ inputs.force }}" == "true" ]]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if git rev-parse --verify --quiet refs/tags/nightly >/dev/null; then
+            tagged="$(git rev-list -n 1 refs/tags/nightly)"
+            if [[ "$tagged" == "$GITHUB_SHA" ]]; then
+              echo "nightly already points at $GITHUB_SHA; skipping"
+              echo "run=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+
+          echo "run=true" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build the nightly artifacts
+    needs: check
+    if: needs.check.outputs.run == 'true'
     uses: ./.github/workflows/build-artifacts.yml
     with:
       channel: nightly
@@ -22,10 +64,12 @@ jobs:
     permissions:
       contents: read
       packages: write
+      security-events: write
 
   publish:
     name: Roll the nightly prerelease
-    needs: build
+    needs: [ check, build ]
+    if: needs.check.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -59,5 +103,7 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             dist/z-linux-amd64
+            dist/z-linux-arm64
             dist/z-compiler.jar
+            dist/z-compiler-sbom.json
             dist/SHA256SUMS.txt
