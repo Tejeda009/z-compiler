@@ -46,7 +46,7 @@ public final class DeclaratorExprAST extends ExprAST {
     public @Nullable Value codeGen(final IRBuilder builder) {
         if (global) return genGlobal(builder);
 
-        if (builder.symbols().lookupCurrentScope(name) != null) {
+        if (builder.symbols().lookup(name) != null) {
             logger.error("Error: Shadowing or redeclaration of the local variable: {}", name);
             builder.markFailed();
             return null;

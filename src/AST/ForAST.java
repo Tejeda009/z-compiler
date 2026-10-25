@@ -57,73 +57,78 @@ public final class ForAST extends ExprAST {
 
     @Override
     public Value codeGen(final IRBuilder builder) {
-        if (builder.symbols().lookupCurrentScope(varName) != null) {
-            logger.error("Error: Shadowing or local redeclaration of : {}", varName);
-            builder.markFailed();
-            return null;
-        }
-        final String slot = builder.emitAlloca(varName, varType.llvm());
-        builder.symbols().define(varName, new SymbolTable.SymbolInfo(
-                varName, varType, slot, false));
-
-        if (init != null) {
-            final Value produced = init.codeGen(builder);
-            if (produced == null) {
+        builder.symbols().enterScope();
+        try {
+            if (builder.symbols().lookup(varName) != null) {
+                logger.error("Error: Shadowing or local redeclaration of : {}", varName);
                 builder.markFailed();
                 return null;
             }
-            final Value fitted = init.coerce(builder, produced, varType);
-            if (fitted == null) {
+            final String slot = builder.emitAlloca(varName, varType.llvm());
+            builder.symbols().define(varName, new SymbolTable.SymbolInfo(
+                    varName, varType, slot, false));
+
+            if (init != null) {
+                final Value produced = init.codeGen(builder);
+                if (produced == null) {
+                    builder.markFailed();
+                    return null;
+                }
+                final Value fitted = init.coerce(builder, produced, varType);
+                if (fitted == null) {
+                    builder.markFailed();
+                    return null;
+                }
+                builder.emitStore(fitted.text(), varType.llvm(), slot);
+            } else {
+                builder.emitStore(varType.initial(), varType.llvm(), slot);
+            }
+
+            final String condLabel = builder.nextLabel("for.cond");
+            final String bodyLabel = builder.nextLabel("for.body");
+            final String incLabel  = builder.nextLabel("for.inc");
+            final String endLabel  = builder.nextLabel("for.end");
+
+
+            builder.emitBr(condLabel);
+            builder.emitLabel(condLabel);
+
+
+            final String condReg = Conditions.emitI1(builder, cond);
+            if (condReg == null) {
                 builder.markFailed();
                 return null;
             }
-            builder.emitStore(fitted.text(), varType.llvm(), slot);
-        } else {
-            builder.emitStore(varType.initial(), varType.llvm(), slot);
-        }
-
-        final String condLabel = builder.nextLabel("for.cond");
-        final String bodyLabel = builder.nextLabel("for.body");
-        final String incLabel  = builder.nextLabel("for.inc");
-        final String endLabel  = builder.nextLabel("for.end");
+            builder.emitCondBr(condReg, bodyLabel, endLabel);
 
 
-        builder.emitBr(condLabel);
-        builder.emitLabel(condLabel);
+            builder.emitLabel(bodyLabel);
+            body.codeGen(builder);
+            if (builder.hasFailed()) return null;
+            if (builder.isTerminated()) {
+                builder.emitLabel(endLabel);
+                return null;
+            }
+            builder.emitBr(incLabel);
 
+            builder.emitLabel(incLabel);
+            final Value updateProduced = update.codeGen(builder);
+            if (updateProduced == null) {
+                builder.markFailed();
+                return null;
+            }
+            final Value updateFitted = update.coerce(builder, updateProduced, varType);
+            if (updateFitted == null) {
+                builder.markFailed();
+                return null;
+            }
+            builder.emitStore(updateFitted.text(), varType.llvm(), slot);
+            builder.emitBr(condLabel);
 
-        final String condReg = Conditions.emitI1(builder, cond);
-        if (condReg == null) {
-            builder.markFailed();
-            return null;
-        }
-        builder.emitCondBr(condReg, bodyLabel, endLabel);
-
-
-        builder.emitLabel(bodyLabel);
-        body.codeGen(builder);
-        if (builder.hasFailed()) return null;
-        if (builder.isTerminated()) {
             builder.emitLabel(endLabel);
             return null;
+        } finally {
+            builder.symbols().exitScope();
         }
-        builder.emitBr(incLabel);
-
-        builder.emitLabel(incLabel);
-        final Value updateProduced = update.codeGen(builder);
-        if (updateProduced == null) {
-            builder.markFailed();
-            return null;
-        }
-        final Value updateFitted = update.coerce(builder, updateProduced, varType);
-        if (updateFitted == null) {
-            builder.markFailed();
-            return null;
-        }
-        builder.emitStore(updateFitted.text(), varType.llvm(), slot);
-        builder.emitBr(condLabel);
-
-        builder.emitLabel(endLabel);
-        return null;
     }
 }

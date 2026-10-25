@@ -664,7 +664,7 @@ public class Parser {
             next();
             final List<ExprAST> stmts = parseBlockBody();
             if (stmts == null) return null;
-            elseBody = stmts.size() == 1 ? stmts.getFirst() : new BlockAST(stmts);
+            elseBody = new BlockAST(stmts);
         }
 
         return new IfAST(branches, elseBody);
@@ -691,7 +691,7 @@ public class Parser {
         next();
         final List<ExprAST> stmts = parseBlockBody();
         if (stmts == null) return null;
-        final ExprAST body = stmts.size() == 1 ? stmts.getFirst() : new BlockAST(stmts);
+        final ExprAST body = new BlockAST(stmts);
         return new IfAST.Branch(cond, body);
     }
 
