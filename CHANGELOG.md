@@ -2,6 +2,18 @@
 
 All notable changes to Z-Compiler are documented in this file.
 
+## [unreleased]
+
+### Features
+
+- Add changelog section to README
+
+## [0.0.6-rc.1] - 2026-10-25
+
+### CI/CD & Build
+
+- CI: added workflows and removed useless one
+
 ## [0.0.5-rc.1] - 2026-10-25
 
 ### Features
@@ -60,20 +72,14 @@ All notable changes to Z-Compiler are documented in this file.
 
 ## [0.0.2-rc.1] - 2026-10-23
 
-### Bug Fixes
-
-- Fix?
-- Fix #97: add declared return types, including str
-
 ### Other Changes
 
 - I'm a complete idiot
 - Is it done now?
 - Should be done
 - Partial implementation
-- Hopefully a fix
 
-## [1.2.0-rc.1] - 2026-10-19
+## [0.0.1-rc.1] - 2026-10-19
 
 ### Tests
 
@@ -111,6 +117,8 @@ All notable changes to Z-Compiler are documented in this file.
 
 ### Bug Fixes
 
+- Fix?
+- Fix #97: add declared return types, including str
 - Fixed CI/CD????? idk
 - Fix #85: add string literals and concatenation
 - Fix #63: add uint32, uint64 and str types
@@ -146,6 +154,7 @@ All notable changes to Z-Compiler are documented in this file.
 
 ### Other Changes
 
+- Hopefully a fix
 - Bait
 - Hopefully a fix
 - Finally a working linking system Co-authored-by: my stupid brain
