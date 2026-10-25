@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import src.AST.ExprAST;
 import src.Parser.Parser;
 import src.Parser.ZType;
-import src.lexer.Lexer;
+import src.Lexer.Lexer;
 import src.AST.*;
 
 import java.io.ByteArrayInputStream;

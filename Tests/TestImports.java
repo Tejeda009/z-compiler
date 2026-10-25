@@ -7,7 +7,7 @@ import src.AST.ExprAST;
 import src.AST.ImportAST;
 import src.Main.Main;
 import src.Parser.Parser;
-import src.lexer.Lexer;
+import src.Lexer.Lexer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import src.Main.Main;
 import src.Parser.Parser;
-import src.lexer.Lexer;
+import src.Lexer.Lexer;
 
 import java.io.IOException;
 import java.io.InputStream;

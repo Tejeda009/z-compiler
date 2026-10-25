@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import src.AST.*;
 import src.Parser.Parser;
-import src.lexer.Lexer;
+import src.Lexer.Lexer;
 
 import java.io.IOException;
 import java.nio.file.Files;
