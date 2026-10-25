@@ -285,7 +285,26 @@ public class TestCodeGen {
         final String code = "proc main() { for (int32 i -> 0 | i < 3 | i + 1) { }\n ret i }";
         assertCodegenFails(code);
     }
-
+    @Test
+    public void testOuterVariableRemainsAccessibleAfterInnerBlock() throws IOException {
+        final String code = "proc main() { int32 x -> 3\n if (true) { int32 y -> 4 }\n ret x }";
+        assertNotNull(codeGen(code));
+    }
+    @Test
+    public void testVariableDeclaredInsideIfIsOutOfScope() {
+        final String code = "proc main() { if (true) { int32 x -> 3 } ret x }";
+        assertCodegenFails(code);
+    }
+    @Test
+    public void testOuterVariableRemainsAccessibleInsideIfBlock() throws IOException {
+        final String code = "proc main() { int32 x -> 3 if (true) { ret x } }";
+        assertNotNull(codeGen(code));
+    }
+    @Test
+    public void testInnerIfVariableIsNotAccessibleInOuterIf() {
+        final String code = "proc main() { if (true) { if (true) { int32 x -> 3 } ret x } }";
+        assertCodegenFails(code);
+    }
     @Test
     public void testFloatForLoopComparesAsFloat() throws IOException {
         final String code = "proc main() {\n for (flt64 i -> 0.0 | i < 2.0 | i + 0.5) { }\n ret 0\n}";
