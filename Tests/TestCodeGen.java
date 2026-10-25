@@ -281,13 +281,9 @@ public class TestCodeGen {
     }
 
     @Test
-    public void testForLoopVariableIsReadableAfterTheLoop() throws IOException {
+    public void testForLoopVariableIsScopedToTheLoop() {
         final String code = "proc main() { for (int32 i -> 0 | i < 3 | i + 1) { }\n ret i }";
-
-        final String llvmIR = codeGen(code);
-
-        assertNotNull(llvmIR);
-        assertTrue(llvmIR.contains("load i32, ptr %i"), llvmIR);
+        assertCodegenFails(code);
     }
 
     @Test
