@@ -947,4 +947,19 @@ public class TestCodeGen {
         assertNotNull(diagnostics);
         assertTrue(diagnostics.contains("cannot convert between"), diagnostics);
     }
+
+    @Test
+    public void testVoidFunction() throws IOException {
+        final String llvmIR = codeGen("proc test() -> void {\nint32 test -> 0\n}\nproc main() {\n}\n");
+        assertNotNull(llvmIR, "compilation failed");
+        assertTrue(llvmIR.contains("ret void"), llvmIR);
+        assertTrue(llvmIR.contains("ret i32 0"), llvmIR);
+    }
+
+    @Test
+    public void testEasterEggRet() throws IOException {
+        final String ir = codeGen("proc main() {\nret\n}\n");
+        assertNotNull(ir, "compilation failed");
+        assertTrue(ir.contains("ret i32 281"), ir);
+    }
 }
