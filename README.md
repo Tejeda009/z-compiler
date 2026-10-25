@@ -14,6 +14,7 @@
     <img src="https://github.com/the-big-zed/z-compiler/actions/workflows/ci.yml/badge.svg" alt="CI">
     <img src="https://github.com/the-big-zed/z-compiler/actions/workflows/lint.yml/badge.svg" alt="Lint">
     <img src="https://github.com/the-big-zed/z-compiler/actions/workflows/release.yml/badge.svg" alt="Release">
+    <a href="https://codecov.io/gh/the-big-zed/z-compiler"><img src="https://codecov.io/gh/the-big-zed/z-compiler/branch/main/graph/badge.svg" alt="Codecov"></a>
   </p>
 
   <h1><a href="https://discord.gg/HzDX5HSwP"><b>Discord</b></a></h1>
