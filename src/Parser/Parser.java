@@ -467,7 +467,7 @@ public class Parser {
                 if (curTok == Lexer.Tokens.CLOSE_PAR.value) break;
 
                 if (curTok != Lexer.Tokens.PARAMS.value) {
-                    return error("Expected ')' or '|' in argument list");
+                    return error("Expected ')' or '|' in argument list in: " + idName);
                 }
                 next();
             }
