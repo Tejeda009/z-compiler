@@ -23,6 +23,9 @@
 ## Examples
 Example files can be found in the [examples folder](./examples/)
 
+## Changelog
+Changelogs can be found in the [changelog file](./CHANGELOG.md)
+
 ## Development
 
 ```sh
