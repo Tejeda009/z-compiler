@@ -19,6 +19,10 @@
   <h1><a href="https://discord.gg/HzDX5HSwP"><b>Discord</b></a></h1>
 </div>
 
+## Examples
+Example files can be found in the [examples folder](./examples/)
+
+
 ## Development
 
 ```sh
