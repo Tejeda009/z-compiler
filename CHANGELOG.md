@@ -2,11 +2,24 @@
 
 All notable changes to Z-Compiler are documented in this file.
 
-## [unreleased]
+## [0.0.7-rc.1] - 2026-10-25
 
 ### Features
 
 - Add changelog section to README
+
+### Bug Fixes
+
+- FIX: fix version of acquasecurity for the release workflows
+- Fix #143: add multi-line comments to the lexer
+
+### Documentation
+
+- Docs: update changelog for v0.0.6-rc.1
+
+### Other Changes
+
+- Update Discord link in README
 
 ## [0.0.6-rc.1] - 2026-10-25
 
