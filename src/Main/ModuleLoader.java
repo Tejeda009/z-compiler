@@ -7,12 +7,15 @@ import src.Parser.Parser;
 import src.Lexer.Lexer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
 public final class ModuleLoader {
     private static final Logger logger = LoggerFactory.getLogger(ModuleLoader.class);
+
+    private static final String STD = "std";
 
     private final Map<String, ModuleAST> compiled = new LinkedHashMap<>();
 
@@ -51,14 +54,18 @@ public final class ModuleLoader {
 
         try {
             final Path file = (fromDir == null ? Path.of(".") : fromDir).resolve(moduleName + ".z");
-            if (!Files.isRegularFile(file)) {
+            final ModuleAST module;
+            if (Files.isRegularFile(file)) {
+                module = parseFile(file, moduleName);
+            } else if (moduleName.equals(STD)) {
+                // the standard library ships inside the compiler
+                module = parseStd();
+            } else {
                 if (logger.isErrorEnabled()) {
                     logger.error("Error: import file '{}' not found", file);
                 }
                 return true;
             }
-
-            final ModuleAST module = parseFile(file, moduleName);
             if (module == null) return true;
 
             for (final ImportAST nested : module.imports()) {
@@ -76,6 +83,16 @@ public final class ModuleLoader {
     public static ModuleAST parseFile(final Path file, final String moduleName) throws IOException {
         final Lexer lexer = new Lexer(Files.newInputStream(file));
         return parseUnit(new Parser(lexer), moduleName);
+    }
+
+    private static ModuleAST parseStd() throws IOException {
+        try (InputStream input = ModuleLoader.class.getResourceAsStream("/" + STD + ".z")) {
+            if (input == null) {
+                logger.error("Error: the standard library is missing from the compiler");
+                return null;
+            }
+            return parseUnit(new Parser(new Lexer(input)), STD);
+        }
     }
 
 

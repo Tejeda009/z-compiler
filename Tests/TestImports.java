@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -217,6 +218,54 @@ public class TestImports {
 
         assertNotNull(ir);
         assertTrue(ir.contains("call double @math_helper()"), ir);
+    }
+
+    @Test
+    void testStdIsLoadedFromTheCompiler() throws IOException {
+        final String ir = compile("main.z", "main.z\nimport std\nproc main() {\n std.println(42)\n ret 0\n}");
+
+        assertNotNull(ir);
+        assertTrue(ir.contains("call void @std_println("), ir);
+        assertTrue(ir.contains("c\"%lld\\0A\\00\""), ir);
+        assertEquals(1, count(ir, "declare i32 @printf("), ir);
+    }
+
+    @Test
+    void testStdFunctionsCanBeCalledWithoutThePrefix() throws IOException {
+        final String ir = compile("main.z", "main.z\nimport std\nproc main() {\n println(42)\n ret 0\n}");
+
+        assertNotNull(ir);
+        assertTrue(ir.contains("call void @std_println("), ir);
+    }
+
+    @Test
+    void testOwnFunctionWinsOverTheStdOne() throws IOException {
+        final String ir = compile("main.z",
+                "main.z\nimport std\nproc println(int64 value) -> void {\n ret\n}\nproc main() {\n println(42)\n ret 0\n}");
+
+        assertNotNull(ir);
+        assertTrue(ir.contains("call void @println("), ir);
+        assertFalse(ir.contains("call void @std_println("), ir);
+    }
+
+    @Test
+    void testStdWorksWithAUserDeclaredPrintf() throws IOException {
+        final String ir = compile("main.z",
+                "main.z\nimport std\nextern printf(str | ...) -> int32\nproc main() {\n std.println(1)\n printf(\"done\")\n ret 0\n}");
+
+        assertNotNull(ir);
+        assertEquals(1, count(ir, "declare i32 @printf("), ir);
+    }
+
+    @Test
+    void testLocalStdFileTakesPrecedence() throws IOException {
+        final String ir = compile("main.z",
+                "main.z\nimport std\nproc main() { ret std.answer() }",
+                "std.z\nproc answer() { ret 42 }");
+
+        assertNotNull(ir);
+        assertTrue(ir.contains("@std_answer"), ir);
+        assertFalse(ir.contains("@std_println"), ir);
     }
 
     @Test

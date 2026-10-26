@@ -1,0 +1,6 @@
+extern printf(str | ...) -> int32
+
+proc println(int64 value) -> void {
+    printf("%lld\n" | value)
+    ret
+}

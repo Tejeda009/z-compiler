@@ -70,7 +70,10 @@ public class IRBuilder {
             if (own != null) return new ResolvedSignature(own, irName(currentModule + "." + callee));
         }
         final PrototypeAST root = signatures.get(callee);
-        return root == null ? null : new ResolvedSignature(root, irName(callee));
+        if (root != null) return new ResolvedSignature(root, irName(callee));
+        // the standard library can be called without its prefix once imported
+        final PrototypeAST std = signatures.get("std." + callee);
+        return std == null ? null : new ResolvedSignature(std, irName("std." + callee));
     }
 
     private static final String DOUBLE = "double";
