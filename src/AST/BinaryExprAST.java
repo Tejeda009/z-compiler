@@ -174,8 +174,10 @@ public final class BinaryExprAST extends ExprAST {
         final String buf = builder.nextRegister();
         builder.appendLine(buf + " = call ptr @malloc(i64 " + total + ")");
 
-        builder.appendLine("call ptr @strcpy(ptr " + buf + ", ptr " + a.text() + ")");
-        builder.appendLine("call ptr @strcat(ptr " + buf + ", ptr " + b.text() + ")");
+        final String copied = builder.nextRegister();
+        builder.appendLine(copied + " = call ptr @strcpy(ptr " + buf + ", ptr " + a.text() + ")");
+        final String concatenated = builder.nextRegister();
+        builder.appendLine(concatenated + " = call ptr @strcat(ptr " + buf + ", ptr " + b.text() + ")");
 
         builder.setRegisterType(buf, ZType.STRING.llvm());
         return new Value(buf, ZType.STRING);

@@ -219,6 +219,8 @@ class CompilerCmd implements Callable<Integer> {
             command.add(lib.startsWith("-l") ? lib : "-l" + lib);
         }
 
+        command.add("-lm");
+
         final ProcessBuilder processBuilder = new ProcessBuilder(command);
 
         processBuilder.inheritIO();

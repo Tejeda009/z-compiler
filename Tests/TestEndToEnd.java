@@ -57,6 +57,11 @@ public class TestEndToEnd {
         return Files.createTempDirectory(prefix, PosixFilePermissions.asFileAttribute(permissions));
     }
 
+    private static void securePath(final ProcessBuilder builder) {
+        final String path = getSecurePath();
+        if (path != null) builder.environment().put("PATH", path);
+    }
+
     public Path compile(final String name, final String source) throws IOException, InterruptedException {
         final Path directory = createSecureTempDirectory("zendtoend");
         final Path sourceFile = directory.resolve(name + ".z");
@@ -69,7 +74,7 @@ public class TestEndToEnd {
                 sourceFile.toString(),
                 "-o", directory.resolve(name).toString())
                 .redirectErrorStream(true);
-        builder.environment().put("PATH", getSecurePath());
+        securePath(builder);
         final Process process = builder.start();
 
         final String output = new String(process.getInputStream().readAllBytes());
@@ -275,7 +280,7 @@ public class TestEndToEnd {
                 sourceFile.toString(),
                 "-o", binary.toString())
                 .redirectErrorStream(true);
-        builder.environment().put("PATH", getSecurePath());
+        securePath(builder);
         final Process process = builder.start();
 
         final String output = new String(process.getInputStream().readAllBytes());
@@ -301,7 +306,7 @@ public class TestEndToEnd {
                 sourceFile.toString(),
                 "-o", binary.toString())
                 .redirectErrorStream(true);
-        builder.environment().put("PATH", getSecurePath());
+        securePath(builder);
         final Process process = builder.start();
 
         final String output = new String(process.getInputStream().readAllBytes());
@@ -327,7 +332,7 @@ public class TestEndToEnd {
                 sourceFile.toString(),
                 "-o", binary.toString())
                 .redirectErrorStream(true);
-        builder.environment().put("PATH", getSecurePath());
+        securePath(builder);
         final Process process = builder.start();
 
         final String output = new String(process.getInputStream().readAllBytes());
@@ -352,7 +357,7 @@ public class TestEndToEnd {
                 sourceFile.toString(),
                 "-o", binary.toString())
                 .redirectErrorStream(true);
-        builder.environment().put("PATH", getSecurePath());
+        securePath(builder);
         final Process process = builder.start();
 
         final String output = new String(process.getInputStream().readAllBytes());
@@ -370,7 +375,7 @@ public class TestEndToEnd {
                 "src.Main.Main",
                 "/nonexistent/path.z")
                 .redirectErrorStream(true);
-        builder.environment().put("PATH", getSecurePath());
+        securePath(builder);
         final Process process = builder.start();
 
         assertNotEquals(0, process.waitFor());
@@ -390,7 +395,7 @@ public class TestEndToEnd {
                 directory.resolve(root + ".z").toString(),
                 "-o", directory.resolve(root).toString())
                 .redirectErrorStream(true);
-        builder.environment().put("PATH", getSecurePath());
+        securePath(builder);
         final Process process = builder.start();
 
         final String output = new String(process.getInputStream().readAllBytes());
@@ -436,7 +441,7 @@ public class TestEndToEnd {
                 sourceFile.toString(),
                 "-o", binary.toString())
                 .redirectErrorStream(true);
-        builder.environment().put("PATH", getSecurePath());
+        securePath(builder);
         final Process process = builder.start();
 
         final String output = new String(process.getInputStream().readAllBytes());

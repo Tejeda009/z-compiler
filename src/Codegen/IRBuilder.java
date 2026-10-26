@@ -7,8 +7,10 @@ import src.AST.Value;
 import src.Parser.ZType;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class with helper methods to generate LLVM IR code using testual strings
@@ -56,24 +58,43 @@ public class IRBuilder {
         return irName(qualify(name));
     }
 
-    public record ResolvedSignature(PrototypeAST prototype, String irName) {
+    public record ResolvedSignature(PrototypeAST prototype, String irName, ZType externReturnType) {
+        public ResolvedSignature(final PrototypeAST prototype, final String irName) {
+            this(prototype, irName, null);
+        }
     }
 
 
     public ResolvedSignature resolve(final String callee) {
         if (callee.contains(".")) {
             final PrototypeAST prototype = signatures.get(callee);
-            return prototype == null ? null : new ResolvedSignature(prototype, irName(callee));
+            if (prototype != null) return new ResolvedSignature(prototype, irName(callee));
+            // an extern of the standard library keeps its plain C name
+            if (!callee.startsWith("std.")) return null;
+            return resolveExtern(callee.substring("std.".length()));
         }
         if (currentModule != null) {
+            // a wrapper calls the C function it shares its name with
+            if (moduleExterns.contains(currentModule + "." + callee)) {
+                final ResolvedSignature external = resolveExtern(callee);
+                if (external != null) return external;
+            }
             final PrototypeAST own = signatures.get(currentModule + "." + callee);
             if (own != null) return new ResolvedSignature(own, irName(currentModule + "." + callee));
         }
         final PrototypeAST root = signatures.get(callee);
-        if (root != null) return new ResolvedSignature(root, irName(callee));
+        if (root != null) return new ResolvedSignature(root, irName(callee), externReturnTypes.get(callee));
         // the standard library can be called without its prefix once imported
         final PrototypeAST std = signatures.get("std." + callee);
-        return std == null ? null : new ResolvedSignature(std, irName("std." + callee));
+        if (std == null) return null;
+        return new ResolvedSignature(std, irName("std." + callee), externReturnTypes.get("std." + callee));
+    }
+
+    private ResolvedSignature resolveExtern(final String name) {
+        final PrototypeAST prototype = signatures.get(name);
+        final ZType returnType = externReturnTypes.get(name);
+        if (prototype == null || returnType == null) return null;
+        return new ResolvedSignature(prototype, irName(name), returnType);
     }
 
     private static final String DOUBLE = "double";
@@ -122,6 +143,9 @@ public class IRBuilder {
      */
     private final Map<String, ZType> externReturnTypes = new HashMap<>();
 
+    /** Externs declared by each module, used to resolve its wrappers. */
+    private final Set<String> moduleExterns = new HashSet<>();
+
     /** What happened when an extern was declared. */
     public enum ExternDeclaration {
         DECLARED,
@@ -137,6 +161,7 @@ public class IRBuilder {
      * @return whether the declaration is new, already present, or conflicts
      */
     public ExternDeclaration declareExtern(final PrototypeAST prototype, final ZType returnType) {
+        moduleExterns.add(qualify(prototype.name()));
         final PrototypeAST existing = signatures.get(prototype.name());
         if (existing == null) {
             signatures.put(prototype.name(), prototype);
@@ -152,14 +177,6 @@ public class IRBuilder {
             return ExternDeclaration.ALREADY_DECLARED;
         }
         return ExternDeclaration.CONFLICT;
-    }
-
-    /**
-     * @param name a function name
-     * @return the type the extern of that name returns, or null when it is not an extern
-     */
-    public ZType externReturnType(final String name) {
-        return externReturnTypes.get(name);
     }
 
     public void emitReturn(final Value value) {
@@ -448,8 +465,17 @@ public class IRBuilder {
         if (declaresEmitted) return;
         declaresEmitted = true;
         globals.append("declare ptr @malloc(i64)\n");
-        globals.append("declare i64 @strlen(ptr)\n");
+        if (!hasExtern("strlen", ZType.UINT64)) {
+            globals.append("declare i64 @strlen(ptr)\n");
+        }
         globals.append("declare ptr @strcpy(ptr, ptr)\n");
         globals.append("declare ptr @strcat(ptr, ptr)\n");
+    }
+
+    private boolean hasExtern(final String name, final ZType returnType) {
+        final PrototypeAST prototype = signatures.get(name);
+        if (prototype == null || externReturnTypes.get(name) != returnType) return false;
+        return prototype.params().size() == 1
+                && prototype.params().getFirst().type().equals(ZType.STRING.zName());
     }
 }
