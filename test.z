@@ -1,7 +1,10 @@
+import std
 extern printf(str | ...) -> int32
+
 
 proc test() -> void {
     printf("test")
+    std.println(34)
     ret
 }
 

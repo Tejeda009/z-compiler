@@ -34,11 +34,10 @@ public final class CallExprAST extends ExprAST {
 
     @Override
     public ZType type(final IRBuilder builder) {
-        final ZType externReturn = builder.externReturnType(callee);
-        if (externReturn != null) return externReturn;
         final IRBuilder.ResolvedSignature resolved = builder.resolve(callee);
-        final PrototypeAST signature = resolved == null ? null : resolved.prototype();
-        if (signature == null) return ZType.FLT64;
+        if (resolved == null) return ZType.FLT64;
+        if (resolved.externReturnType() != null) return resolved.externReturnType();
+        final PrototypeAST signature = resolved.prototype();
         if (signature.returnType() != null) return signature.returnType();
         if (signature.isMain()) return ZType.INT32;
         return ZType.FLT64;
@@ -87,7 +86,7 @@ public final class CallExprAST extends ExprAST {
             printed.add(expected.llvm() + " " + fitted.text());
         }
 
-        final ZType externReturn = builder.externReturnType(callee);
+        final ZType externReturn = resolved.externReturnType();
         final ZType result;
         if (externReturn != null) {
             result = externReturn;
@@ -99,9 +98,18 @@ public final class CallExprAST extends ExprAST {
             result = ZType.FLT64;
         }
 
-        final String call = "call " + result.llvm() + " @" + resolved.irName() + "(" + String.join(", ", printed) + ")";
+        final StringBuilder call = new StringBuilder("call ").append(result.llvm());
+        if (variadic) {
+            call.append(" (");
+            for (int i = 0; i < fixedParams; i++) {
+                if (i > 0) call.append(", ");
+                call.append(ZType.fromZName(params.get(i).type()).llvm());
+            }
+            call.append(fixedParams > 0 ? ", ...)" : "...)");
+        }
+        call.append(" @").append(resolved.irName()).append("(").append(String.join(", ", printed)).append(")");
         if (result.isVoid()) {
-            builder.appendLine(call);
+            builder.appendLine(call.toString());
             return null;
         }
         final String register = builder.nextRegister();

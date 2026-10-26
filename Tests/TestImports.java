@@ -249,6 +249,24 @@ public class TestImports {
     }
 
     @Test
+    void testModuleFunctionWinsOverAnImportedExtern() throws IOException {
+        final String ir = compile("main.z",
+                "main.z\nimport math\nproc main() { ret math.answer() }",
+                "math.z\nimport std\nproc answer() -> int32 { ret abs(-1) }\nproc abs(int32 value) -> int32 { ret 99 }");
+
+        assertNotNull(ir);
+        assertTrue(ir.contains("call i32 @math_abs(i32 %1)"), ir);
+        assertEquals(1, count(ir, "call i32 @abs("), "only the std wrapper should call C abs:\n" + ir);
+    }
+
+    @Test
+    void testUnknownModuleFunctionFails() throws IOException {
+        assertNull(compile("main.z",
+                "main.z\nimport math\nproc main() { ret math.nope(1) }",
+                "math.z\nproc twice(int32 x) { ret x * 2 }"));
+    }
+
+    @Test
     void testStdWorksWithAUserDeclaredPrintf() throws IOException {
         final String ir = compile("main.z",
                 "main.z\nimport std\nextern printf(str | ...) -> int32\nproc main() {\n std.println(1)\n printf(\"done\")\n ret 0\n}");
