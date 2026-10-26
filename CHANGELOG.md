@@ -2,6 +2,39 @@
 
 All notable changes to Z-Compiler are documented in this file.
 
+## [0.0.8-rc.1] - 2026-10-26
+
+### Features
+
+- Added labels for new folders
+- Added functions in stdlib and added tests
+- Add a std library with println (#133)
+- Add documentation section to README
+- Add ZType documentation
+
+### Bug Fixes
+
+- Fixed failed test
+- Fix formatting and improve clarity in Ztype.md
+
+### Documentation
+
+- Docs: update changelog for v0.0.7-rc.1
+
+### CI/CD & Build
+
+- Ci: bump codecov/codecov-action from 5 to 7 in the github-actions group
+
+### Maintenance
+
+- Deps: bump the maven-minor-and-patch group with 6 updates
+
+### Other Changes
+
+- Should fix null references
+- Should fix some code scanning alerts
+- Should be fixed now
+
 ## [0.0.7-rc.1] - 2026-10-25
 
 ### Features
@@ -17,15 +50,13 @@ All notable changes to Z-Compiler are documented in this file.
 
 - Docs: update changelog for v0.0.6-rc.1
 
-### Other Changes
-
-- Update Discord link in README
-
-## [0.0.6-rc.1] - 2026-10-25
-
 ### CI/CD & Build
 
 - CI: added workflows and removed useless one
+
+### Other Changes
+
+- Update Discord link in README
 
 ## [0.0.5-rc.1] - 2026-10-25
 
