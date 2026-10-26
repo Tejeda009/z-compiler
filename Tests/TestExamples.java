@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -41,7 +42,7 @@ public class TestExamples {
 
         return examples.stream()
                 .map(example -> {
-                    String testName = example.getFileName() != null ? example.getFileName().toString() : "Unknown File";
+                    final String testName = Optional.ofNullable(example.getFileName()).map(Path::toString).orElse("Unknown File");
 
                     return dynamicTest(testName, () -> {
                         try (InputStream input = Files.newInputStream(example)) {
@@ -50,6 +51,8 @@ public class TestExamples {
                         }
                     });
                 })
-                .toList();
+                .collect(toList());
+
+
     }
 }
