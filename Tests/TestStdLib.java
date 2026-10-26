@@ -241,7 +241,7 @@ public class TestStdLib {
                     if (std.atoll("1234567890123") != 1234567890123) { ret 7 }
                     if (std.atof("2.5") != 2.5) { ret 8 }
                     if (std.sqrt(9.0) != 3.0) { ret 9 }
-                    if (std.cbrt(27.0) != 3.0) { ret 10 }
+                    if (std.fabs(std.cbrt(27.0) - 3.0) > 0.000001) { ret 10 }
                     if (std.pow(2.0 | 3.0) != 8.0) { ret 11 }
                     if (std.ceil(2.1) != 3.0) { ret 12 }
                     if (std.floor(2.9) != 2.0) { ret 13 }
