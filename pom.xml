@@ -71,6 +71,12 @@
         <sourceDirectory>${project.basedir}</sourceDirectory>
         <testSourceDirectory>${project.basedir}/Tests</testSourceDirectory>
 
+        <resources>
+            <resource>
+                <directory>${project.basedir}/stdlib</directory>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.jacoco</groupId>

@@ -464,6 +464,24 @@ public class TestEndToEnd {
     }
 
     @Test
+    public void testStdPrintln() throws IOException, InterruptedException {
+        if (OPT == null || CLANG == null) return;
+
+        final Path binary = compile("output", """
+                import std
+
+                proc main() {
+                    println(42)
+                    std.println(7)
+                    ret 0
+                }
+                """);
+
+        final String output = runAndCaptureOutput(binary);
+        assertEquals("42\n7", output.trim());
+    }
+
+    @Test
     public void testPrintfWithFlt32() throws IOException, InterruptedException {
         if (OPT == null || CLANG == null) return;
 
