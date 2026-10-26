@@ -253,7 +253,8 @@ public class Main {
         final StringBuilder module = new StringBuilder();
 
         // gets the name of the file removing the final .z
-        final String rootName = sourceFile.getFileName().toString().replaceFirst("\\.z$", "");
+        final Path fileNamePath = sourceFile.getFileName();
+        final String rootName = fileNamePath != null ? fileNamePath.toString().replaceFirst("\\.z$", "") : "";
 
         // parses an entire module
         final ModuleAST root = ModuleLoader.parseUnit(parser, rootName);

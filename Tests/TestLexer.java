@@ -83,10 +83,10 @@ public class TestLexer {
         assertEquals(Lexer.Tokens.CN.value, lex.getTok());
         assertEquals(Lexer.Tokens.INT64.value, lex.getTok());
         assertEquals(Lexer.Tokens.IDENTIFIER.value, lex.getTok());
-        assertEquals("PI", lex.identifierStr);
+        assertEquals("PI", lex.getIdentifierStr());
         assertEquals(Lexer.Tokens.ASSIGN.value, lex.getTok());
         assertEquals(Lexer.Tokens.NUMBER.value, lex.getTok());
-        assertEquals(314.0, lex.numVal);
+        assertEquals(314.0, lex.getNumVal());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class TestLexer {
 
         assertEquals(Lexer.Tokens.IMPORT.value, lex.getTok());
         assertEquals(Lexer.Tokens.IDENTIFIER.value, lex.getTok());
-        assertEquals("libc", lex.identifierStr);
+        assertEquals("libc", lex.getIdentifierStr());
     }
 
     @Test
@@ -127,9 +127,9 @@ public class TestLexer {
                 "9007199254740993".getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(Lexer.Tokens.NUMBER.value, lex.getTok());
-        assertEquals("9007199254740993", lex.numberText);
-        assertTrue(lex.numIsInteger);
-        assertFalse(lex.numIsFloat);
+        assertEquals("9007199254740993", lex.getNumberText());
+        assertTrue(lex.getNumIsInteger());
+        assertFalse(lex.getNumIsFloat());
     }
 
     @Test
@@ -138,8 +138,8 @@ public class TestLexer {
                 "3.14".getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(Lexer.Tokens.NUMBER.value, lex.getTok());
-        assertEquals("3.14", lex.numberText);
-        assertTrue(lex.numIsFloat);
+        assertEquals("3.14", lex.getNumberText());
+        assertTrue(lex.getNumIsFloat());
     }
 
     @Test
@@ -148,9 +148,9 @@ public class TestLexer {
                 "1e3".getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(Lexer.Tokens.NUMBER.value, lex.getTok());
-        assertEquals("1e3", lex.numberText);
-        assertTrue(lex.numIsFloat);
-        assertEquals(1000.0, lex.numVal);
+        assertEquals("1e3", lex.getNumberText());
+        assertTrue(lex.getNumIsFloat());
+        assertEquals(1000.0, lex.getNumVal());
     }
 
     @Test
@@ -195,7 +195,7 @@ public class TestLexer {
         assertEquals(Lexer.Tokens.OPEN_PAR.value, lex.getTok());
         assertEquals(Lexer.Tokens.INT32.value, lex.getTok());
         assertEquals(Lexer.Tokens.IDENTIFIER.value, lex.getTok());
-        assertEquals("i", lex.identifierStr);
+        assertEquals("i", lex.getIdentifierStr());
         assertEquals(Lexer.Tokens.ASSIGN.value, lex.getTok());
         assertEquals(Lexer.Tokens.NUMBER.value, lex.getTok());
         assertEquals(Lexer.Tokens.PARAMS.value, lex.getTok());
@@ -226,7 +226,7 @@ public class TestLexer {
                 "myVar42".getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(Lexer.Tokens.IDENTIFIER.value, lex.getTok());
-        assertEquals("myVar42", lex.identifierStr);
+        assertEquals("myVar42", lex.getIdentifierStr());
     }
 
     @Test
@@ -254,7 +254,7 @@ public class TestLexer {
 
         assertEquals(Lexer.Tokens.RET.value, lex.getTok());
         assertEquals(Lexer.Tokens.NUMBER.value, lex.getTok());
-        assertEquals(281, lex.numVal);
+        assertEquals(281, lex.getNumVal());
     }
 
     @Test
@@ -290,7 +290,7 @@ public class TestLexer {
                 "\"hello\"".getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(Lexer.Tokens.STRING_LITERAL.value, lex.getTok());
-        assertEquals("hello", lex.stringVal);
+        assertEquals("hello", lex.getStringVal());
     }
 
     @Test
@@ -299,7 +299,7 @@ public class TestLexer {
                 "\"a\\nb\\t\\\\\\\"c\"".getBytes(StandardCharsets.UTF_8)));
 
         assertEquals(Lexer.Tokens.STRING_LITERAL.value, lex.getTok());
-        assertEquals("a\nb\t\\\"c", lex.stringVal);
+        assertEquals("a\nb\t\\\"c", lex.getStringVal());
     }
 
     @Test
@@ -336,16 +336,16 @@ public class TestLexer {
     void testModuleAccessDotsAreNotSwallowed() throws IOException {
         final Lexer lex = new Lexer(new ByteArrayInputStream("library.math".getBytes(StandardCharsets.UTF_8)));
         assertEquals(Lexer.Tokens.IDENTIFIER.value, lex.getTok());
-        assertEquals("library", lex.identifierStr);
+        assertEquals("library", lex.getIdentifierStr());
         assertEquals('.', lex.getTok());
         assertEquals(Lexer.Tokens.IDENTIFIER.value, lex.getTok());
-        assertEquals("math", lex.identifierStr);
+        assertEquals("math", lex.getIdentifierStr());
     }
 
     @Test
     void testLeadingDotNumberStillWorks() throws IOException {
         final Lexer lex = new Lexer(new ByteArrayInputStream(".5".getBytes(StandardCharsets.UTF_8)));
         assertEquals(Lexer.Tokens.NUMBER.value, lex.getTok());
-        assertEquals(0.5, lex.numVal);
+        assertEquals(0.5, lex.getNumVal());
     }
 }
