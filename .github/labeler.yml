@@ -14,6 +14,18 @@ ast:
   - changed-files:
       - any-glob-to-any-file: 'src/AST/**'
 
+docker:
+  - changed-files:
+      - any-glob-to-any-file: 'docker/**'
+
+examples:
+  - changed-files:
+      - any-glob-to-any-file: 'examples/**'
+
+stdlib:
+  - changed-files:
+      - any-glob-to-any-file: 'stdlib/**'
+
 main:
   - changed-files:
       - any-glob-to-any-file: 'src/Main/**'
