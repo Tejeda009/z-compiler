@@ -7,14 +7,11 @@ import src.AST.*;
 import src.Lexer.Lexer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  */
-public class Parser {
+public final class Parser {
     private static final Logger logger = LoggerFactory.getLogger(Parser.class);
 
     /**
@@ -27,22 +24,26 @@ public class Parser {
     /**
      * BinOpPrecedence stores the precedence of binary operators
      */
-    protected static final HashMap<Integer, Integer> BinOpPrecedence = new HashMap<>();
+    private static final Map<Integer, Integer> BinOpPrecedence;
+
     static {
-        BinOpPrecedence.put(Lexer.Tokens.LESS.value, 10);
-        BinOpPrecedence.put(Lexer.Tokens.MORE.value, 10);
-        BinOpPrecedence.put(Lexer.Tokens.LE.value, 10);
-        BinOpPrecedence.put(Lexer.Tokens.GE.value, 10);
-        BinOpPrecedence.put(Lexer.Tokens.EQ.value, 10);
-        BinOpPrecedence.put(Lexer.Tokens.NE.value, 10);
-        BinOpPrecedence.put(Lexer.Tokens.SAME.value, 10);
-        BinOpPrecedence.put(Lexer.Tokens.ASSIGN.value, 5);
-        BinOpPrecedence.put(Lexer.Tokens.ADD.value, 20);
-        BinOpPrecedence.put(Lexer.Tokens.SUB.value, 20);
-        BinOpPrecedence.put(Lexer.Tokens.MUL.value, 40);
-        BinOpPrecedence.put(Lexer.Tokens.DIV.value, 40);
-        BinOpPrecedence.put(Lexer.Tokens.MOD.value, 40);
+
+        BinOpPrecedence = Map.ofEntries(
+                Map.entry(Lexer.Tokens.LESS.value, 10),
+                Map.entry(Lexer.Tokens.MORE.value, 10),
+                Map.entry(Lexer.Tokens.LE.value, 10),
+                Map.entry(Lexer.Tokens.GE.value, 10),
+                Map.entry(Lexer.Tokens.EQ.value, 10),
+                Map.entry(Lexer.Tokens.NE.value, 10),
+                Map.entry(Lexer.Tokens.SAME.value, 10),
+                Map.entry(Lexer.Tokens.ASSIGN.value, 5),
+                Map.entry(Lexer.Tokens.ADD.value, 20),
+                Map.entry(Lexer.Tokens.SUB.value, 20),
+                Map.entry(Lexer.Tokens.MUL.value, 40),
+                Map.entry(Lexer.Tokens.DIV.value, 40),
+                Map.entry(Lexer.Tokens.MOD.value, 40));
     }
+
 
 
     private static final double LONG_EXACT_LIMIT = 9007199254740992L; // nice, right?
@@ -142,21 +143,21 @@ public class Parser {
     /**
      * @return whether the parser is positioned on the end of the input
      */
-    public final boolean atEOF() {
+    public boolean atEOF() {
         return curTok == Lexer.Tokens.EOF.value;
     }
 
     /**
      * @return the value of the token the parser is positioned on
      */
-    public final int currentToken() {
+    public int currentToken() {
         return curTok;
     }
 
     /**
      * @return whether the parser is positioned on a type keyword
      */
-    public final boolean atTypeDeclaration() {
+    public boolean atTypeDeclaration() {
         return isTypeToken(Lexer.Tokens.fromValues(curTok));
     }
 
@@ -208,14 +209,14 @@ public class Parser {
      * @return an AST node or an error
      * @throws IOException if an exception is found
      */
-    public final DeclaratorExprAST parseVariable(boolean globals) throws IOException {
+    public DeclaratorExprAST parseVariable(boolean globals) throws IOException {
         final ZType zType = parseType(false);
         if (zType == null) return null;
 
         if (curTok != Lexer.Tokens.IDENTIFIER.value) {
             return error("Expected name after type");
         }
-        final String name = lex.identifierStr;
+        final String name = lex.getIdentifierStr();
         next();
 
         if (curTok != Lexer.Tokens.ASSIGN.value && curTok != Lexer.Tokens.SAME.value) {
@@ -233,7 +234,7 @@ public class Parser {
      * @return an AST node or an error
      * @throws IOException if an exception is found
      */
-    public final DeclaratorExprAST parseConstant() throws IOException {
+    public DeclaratorExprAST parseConstant() throws IOException {
         next();
 
         final ZType zType = parseType(false);
@@ -244,7 +245,7 @@ public class Parser {
         if (curTok != Lexer.Tokens.IDENTIFIER.value) {
             return error("Expected constant name");
         }
-        final String name = lex.identifierStr;
+        final String name = lex.getIdentifierStr();
         next();
 
         if (curTok != Lexer.Tokens.ASSIGN.value && curTok != Lexer.Tokens.SAME.value) {
@@ -257,7 +258,7 @@ public class Parser {
 
         return new DeclaratorExprAST(zType, name, value, true, false);
     }
-    public final ArrayAST parseArray() throws IOException {
+    public ArrayAST parseArray() throws IOException {
         //next(); (I believe this isn't necessary here)
         //Array declaration does NOT support expressions inside of it yet. you can only declare with a number
         final Lexer.Tokens typeTok = Lexer.Tokens.fromValues(curTok);
@@ -275,7 +276,7 @@ public class Parser {
         if (curTok != Lexer.Tokens.NUMBER.value) {
             error("Expected number");
         }
-        double size = lex.numVal;
+        double size = lex.getNumVal();
         NumberExprAST arraySize = (NumberExprAST) parseNumberExpr(size);
         NumberExprAST arrayDepth = (NumberExprAST) parseNumberExpr(1);
         next();
@@ -285,7 +286,7 @@ public class Parser {
             if (curTok != Lexer.Tokens.NUMBER.value) {
                 error("Expected number");
             }
-            double depth = lex.numVal;
+            double depth = lex.getNumVal();
             if (size < 1) {
                 return error("Invalid depth");
             }
@@ -299,7 +300,7 @@ public class Parser {
         if (curTok != Lexer.Tokens.IDENTIFIER.value) {
             return error("Expected identifier name");
         }
-        final String name = lex.identifierStr;
+        final String name = lex.getIdentifierStr();
         next();
 
         if (curTok != Lexer.Tokens.OPEN_FUNC.value) {
@@ -316,7 +317,7 @@ public class Parser {
 
         for (int i = 0; i < (int) size; ++i) {
 
-            NumberExprAST valAST = (NumberExprAST) parseNumberExpr(lex.numVal); //qua dentro fa già un next
+            NumberExprAST valAST = (NumberExprAST) parseNumberExpr(lex.getNumVal()); //qua dentro fa già un next
             members.add(valAST);
             if (curTok != Lexer.Tokens.PARAMS.value && curTok != Lexer.Tokens.CLOSE_FUNC.value) {
                 return error("Expected '|' after type definition");
@@ -334,7 +335,7 @@ public class Parser {
      *
      * @throws IOException if an exception is found
      */
-    private final void next() throws IOException {
+    private void next() throws IOException {
         curTok = lex.getTok();
     }
 
@@ -345,14 +346,14 @@ public class Parser {
      * @return a number Expression
      * @throws IOException if an exception is found
      */
-    public final ExprAST parseNumberExpr(final double numVal) throws IOException {
-        final ExprAST result = literal(numVal, lex.numberText, lex.numIsFloat);
+    public ExprAST parseNumberExpr(final double numVal) throws IOException {
+        final ExprAST result = literal(numVal, lex.getNumberText(), lex.getNumIsFloat());
         next();
         return result;
     }
 
 
-    public final ImportAST parseImport() throws IOException {
+    public ImportAST parseImport() throws IOException {
         if (curTok != Lexer.Tokens.IMPORT.value) {
             return null;
         }
@@ -363,13 +364,13 @@ public class Parser {
             return error("Expected module name after 'import'");
         }
 
-        final String moduleName = lex.identifierStr;
+        final String moduleName = lex.getIdentifierStr();
         next();
 
         return new ImportAST(moduleName);
     }
 
-    public final ExternExprAST parseExtern() throws IOException {
+    public ExternExprAST parseExtern() throws IOException {
         if (curTok != Lexer.Tokens.EXTERN.value) {
             return null;
         }
@@ -422,7 +423,7 @@ public class Parser {
      * @return an Expression node or an error
      * @throws IOException if an exception is found
      */
-    public final ExprAST parseParenExpr() throws IOException {
+    public ExprAST parseParenExpr() throws IOException {
         next();
         final ExprAST v = parseExpression();
         if (v == null) return null;
@@ -440,8 +441,8 @@ public class Parser {
      * @return an Expression node or an error
      * @throws IOException if an exception is found
      */
-    public final ExprAST parseIdentifierExpr() throws IOException {
-        StringBuilder idName = new StringBuilder(lex.identifierStr);
+    public ExprAST parseIdentifierExpr() throws IOException {
+        StringBuilder idName = new StringBuilder(lex.getIdentifierStr());
         next();
 
         while (curTok == '.') {
@@ -449,7 +450,7 @@ public class Parser {
             if (curTok != Lexer.Tokens.IDENTIFIER.value) {
                 return error("Expected a name after '.' in '" + idName + "'");
             }
-            idName.append(".").append(lex.identifierStr);
+            idName.append(".").append(lex.getIdentifierStr());
             next();
         }
 
@@ -482,7 +483,7 @@ public class Parser {
      * @return an Expression node or an error
      * @throws IOException if an exception is found
      */
-    public final ExprAST parsePrimary() throws IOException {
+    public ExprAST parsePrimary() throws IOException {
         if (curTok == Lexer.Tokens.OPEN_FUNC.value) {
             next();
         }
@@ -490,9 +491,9 @@ public class Parser {
         if (curTok == Lexer.Tokens.IDENTIFIER.value) {
             return parseIdentifierExpr();
         } else if (curTok == Lexer.Tokens.NUMBER.value) {
-            return parseNumberExpr(lex.numVal);
+            return parseNumberExpr(lex.getNumVal());
         } else if (curTok == Lexer.Tokens.STRING_LITERAL.value) {
-            final String value = lex.stringVal;
+            final String value = lex.getStringVal();
             next();
             return new StringExprAST(value);
         } else if (curTok == Lexer.Tokens.TRUE.value || curTok == Lexer.Tokens.FALSE.value) {
@@ -525,7 +526,7 @@ public class Parser {
      * Returns the precedence of the current token
      * @return the precedence of the operator or -1 if it's not a binary operator
      */
-    public final int getTokPrecedence() {
+    public int getTokPrecedence() {
         final Integer TokPrev = BinOpPrecedence.get(curTok);
         if (TokPrev == null || TokPrev <= 0) return -1;
         return TokPrev;
@@ -537,7 +538,7 @@ public class Parser {
      * @return an RetAST node
      * @throws IOException if an exception is found
      */
-    public final ExprAST parseRet() throws IOException {
+    public ExprAST parseRet() throws IOException {
         next();
         if (curTok == Lexer.Tokens.CLOSE_FUNC.value) {
             return new RetAST(ZType.VOID);
@@ -554,7 +555,7 @@ public class Parser {
      * @return a ForAST node or an error
      * @throws IOException if an exception is found
      */
-    public final @Nullable ForAST parseFor() throws IOException {
+    public @Nullable ForAST parseFor() throws IOException {
         next();  // skip 'for'
 
         if (curTok != Lexer.Tokens.OPEN_PAR.value) {
@@ -572,7 +573,7 @@ public class Parser {
         if (curTok != Lexer.Tokens.IDENTIFIER.value) {
             return error("Expected variable name in for");
         }
-        final String varName = lex.identifierStr;
+        final String varName = lex.getIdentifierStr();
         next();
 
         // Parse initial value
@@ -642,7 +643,7 @@ public class Parser {
      * @return an IfAST node or an error
      * @throws IOException if an exception is found
      */
-    public final IfAST parseIf() throws IOException {
+    public IfAST parseIf() throws IOException {
         next();  // skip 'if'
 
         final List<IfAST.Branch> branches = new ArrayList<>();
@@ -726,7 +727,7 @@ public class Parser {
      * @return a node, in reality it just calls other functions
      * @throws IOException if an exception is found
      */
-    public final ExprAST parseStatement() throws IOException {
+    public ExprAST parseStatement() throws IOException {
         final Lexer.Tokens token = Lexer.Tokens.fromValues(curTok);
         if (token == Lexer.Tokens.RET) {
             return parseRet();
@@ -750,7 +751,7 @@ public class Parser {
      * @return null or calls other functions
      * @throws IOException if an exception is found
      */
-    public final ExprAST parseExpression() throws IOException {
+    public ExprAST parseExpression() throws IOException {
         final ExprAST leftOperandSide = parsePrimary();
         if (leftOperandSide == null) return null;
 
@@ -764,7 +765,7 @@ public class Parser {
      * @return null or a BinaryExprAST node
      * @throws IOException if an exception is found
      */
-    public final ExprAST parseBinOpRHS(final int ExprPrev, ExprAST leftOperandSide) throws IOException {
+    public ExprAST parseBinOpRHS(final int ExprPrev, ExprAST leftOperandSide) throws IOException {
         while (true) {
             final int TokPrev = getTokPrecedence();
 
@@ -801,7 +802,7 @@ public class Parser {
                     if (curTok != Lexer.Tokens.NUMBER.value) {
                         error("Expected index value");
                     }
-                    double size = lex.numVal;
+                    double size = lex.getNumVal();
                     NumberExprAST idx = (NumberExprAST) parseNumberExpr(size); //no support for expressions when indexing
                     indexes.add(idx);
                     next();
@@ -829,11 +830,11 @@ public class Parser {
      * @return an error or a PrototypeAST node
      * @throws IOException if an exception is found
      */
-    public final @Nullable PrototypeAST parsePrototype(final boolean extern) throws IOException {
+    public @Nullable PrototypeAST parsePrototype(final boolean extern) throws IOException {
         if (curTok != Lexer.Tokens.IDENTIFIER.value) {
             return error("Expected function name in prototype, got " + describeToken(curTok) + " instead");
         }
-        final String fnName = lex.identifierStr;
+        final String fnName = lex.getIdentifierStr();
         next();
 
         // Expect '('
@@ -859,7 +860,7 @@ public class Parser {
                     if (curTok != Lexer.Tokens.IDENTIFIER.value) {
                         return error("Expected parameter name");
                     }
-                    final String paramName = lex.identifierStr;
+                    final String paramName = lex.getIdentifierStr();
                     next();
                     params.add(new PrototypeAST.Param(paramType.zName(), paramName));
                 }
@@ -903,7 +904,7 @@ public class Parser {
      * @return null or a FunctionAST node
      * @throws IOException if an exception is found
      */
-    public final @Nullable FunctionAST parseDefinition() throws IOException {
+    public @Nullable FunctionAST parseDefinition() throws IOException {
         if (curTok == Lexer.Tokens.EOF.value) {
             return null;
         }

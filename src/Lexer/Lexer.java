@@ -92,16 +92,33 @@ public class Lexer {
     private int lastChar = ' ';
     /** a '.' already read while looking for a vararg, still to be returned */
     private boolean pendingDot;
-    public String identifierStr;
-    public double numVal;
+    private String identifierStr;
+    private double numVal;
     /** the number exactly as it was written, which NumVal cannot represent */
-    public String numberText;
+    private String numberText;
     /** true when the literal had a decimal point or an exponent */
-    public boolean numIsFloat;
+    private boolean numIsFloat;
     /** true when the literal was written without one */
-    public boolean numIsInteger;
+    private boolean numIsInteger;
     /** the contents of a string literal, after escape processing */
-    public String stringVal;
+    private String stringVal;
+
+    public final String getStringVal() { return stringVal; }
+    public final void setStringVal(final String stringVal) { this.stringVal = stringVal; }
+    public final boolean getPendingDot() { return pendingDot; }
+    public final void setPendingDot(final boolean pendingDot) { this.pendingDot = pendingDot; }
+    public final int getLastChar() { return lastChar; }
+    public final void setLastChar(final int lastChar) { this.lastChar = lastChar; }
+    public final boolean getNumIsFloat() { return numIsFloat; }
+    public final void setNumIsFloat(final boolean numIsFloat) { this.numIsFloat = numIsFloat; }
+    public final boolean getNumIsInteger() { return numIsInteger; }
+    public final void setNumIsInteger(final boolean numIsInteger) { this.numIsInteger = numIsInteger; }
+    public final double getNumVal() { return numVal; }
+    public final void setNumVal(final double numVal) { this.numVal = numVal; }
+    public final String getIdentifierStr() { return identifierStr; }
+    public final void setIdentifierStr(final String identifierStr) { this.identifierStr = identifierStr; }
+    public final String getNumberText() { return numberText; }
+    public final void setNumberText(final String numberText) { this.numberText = numberText; }
 
     // stream for the input
     private final InputStream input;

@@ -12,8 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
@@ -28,7 +30,10 @@ public class TestExamples {
         try (Stream<Path> files = Files.list(EXAMPLES)) {
             examples = files
                     .filter(Files::isRegularFile)
-                    .filter(file -> file.getFileName().toString().endsWith(".z"))
+                    .filter(file -> {
+                        Path fileName = file.getFileName();
+                        return fileName != null && fileName.toString().endsWith(".z");
+                    })
                     .sorted()
                     .toList();
         }
@@ -36,13 +41,18 @@ public class TestExamples {
         assertFalse(examples.isEmpty(), "no .z files found in " + EXAMPLES);
 
         return examples.stream()
-                .map(example -> dynamicTest(example.getFileName().toString(), () -> {
-                    try (InputStream input = Files.newInputStream(example)) {
-                        final Parser parser = new Parser(new Lexer(input));
-                        assertNotNull(Main.generateModule(parser, example),
-                                () -> "failed to compile " + example);
-                    }
-                }))
-                .toList();
+                .map(example -> {
+                    final String testName = Optional.ofNullable(example.getFileName()).map(Path::toString).orElse("Unknown File");
+
+                    return dynamicTest(testName, () -> {
+                        try (InputStream input = Files.newInputStream(example)) {
+                            final Parser parser = new Parser(new Lexer(input));
+                            assertNotNull(Main.generateModule(parser, example));
+                        }
+                    });
+                })
+                .collect(toList());
+
+
     }
 }
