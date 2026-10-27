@@ -735,6 +735,9 @@ public final class Parser {
             return parseIf();
         } else if (token == Lexer.Tokens.FOR) {
             return parseFor();
+        } else if (token == Lexer.Tokens.BREAK || token == Lexer.Tokens.CONTINUE) {
+            next();
+            return new LoopJumpAST(token == Lexer.Tokens.BREAK);
         } else if (isTypeToken(token)) {
             return parseVariable(false);
         } else if (token == Lexer.Tokens.CN) {

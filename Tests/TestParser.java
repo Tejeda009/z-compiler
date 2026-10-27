@@ -203,6 +203,15 @@ public class TestParser {
     }
 
     @Test
+    void testBreakAndContinueAreParsed() throws IOException {
+        final LoopJumpAST jump = assertInstanceOf(LoopJumpAST.class, createParser("break").parseStatement());
+        assertTrue(jump.isBreak());
+        assertEquals(ZType.VOID, jump.type(new src.Codegen.IRBuilder()));
+
+        assertFalse(assertInstanceOf(LoopJumpAST.class, createParser("continue").parseStatement()).isBreak());
+    }
+
+    @Test
     void testForLoopMissingSeparatorFails() throws IOException {
         final Parser parser = createParser("for (int32 i -> 0, i < 10 | i + 1) { }");
         assertNull(parser.parseStatement());

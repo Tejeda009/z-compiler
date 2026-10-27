@@ -189,6 +189,32 @@ public class TestGeneratedIrIsAccepted {
     }
 
     @Test
+    public void breakAndContinueAreAccepted() throws IOException, InterruptedException {
+        assertLlvmAccepts("""
+                proc main() {
+                  for (int32 i -> 0 | i < 10 | i + 1) {
+                    if (i == 2) { continue }
+                    if (i == 5) { break }
+                  }
+                  ret 0
+                }""");
+    }
+
+    @Test
+    public void lastStatementBreakAndContinueAreAccepted() throws IOException, InterruptedException {
+        assertLlvmAccepts("""
+                proc main() {
+                  for (int32 i -> 0 | i < 3 | i + 1) {
+                    for (int32 j -> 0 | j < 3 | j + 1) {
+                      continue
+                    }
+                    break
+                  }
+                  ret 0
+                }""");
+    }
+
+    @Test
     public void wideIntegersAreAccepted() throws IOException, InterruptedException {
         assertLlvmAccepts("proc main() { int64 big -> 9007199254740993\n ret big }");
     }

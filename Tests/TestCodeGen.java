@@ -344,6 +344,90 @@ public class TestCodeGen {
     }
 
     @Test
+    public void testBreakJumpsToTheEndOfTheLoop() throws IOException {
+        final String code = """
+                proc main() {
+                  for (int32 i -> 0 | i < 10 | i + 1) {
+                    if (i == 3) { break }
+                  }
+                  ret 0
+                }""";
+
+        final String llvmIR = codeGen(code);
+
+        assertNotNull(llvmIR);
+        assertTrue(llvmIR.contains("br label %for.end.3"), llvmIR);
+    }
+
+    @Test
+    public void testContinueJumpsToTheUpdate() throws IOException {
+        final String code = """
+                proc main() {
+                  for (int32 i -> 0 | i < 10 | i + 1) {
+                    if (i == 3) { continue }
+                    int32 x -> i
+                  }
+                  ret 0
+                }""";
+
+        final String llvmIR = codeGen(code);
+
+        assertNotNull(llvmIR);
+        assertEquals(2, llvmIR.split("br label %for.inc.2", -1).length - 1, llvmIR);
+    }
+
+    @Test
+    public void testContinueAsTheLastStatementKeepsTheUpdate() throws IOException {
+        final String code = "proc main() {\n for (int32 i -> 0 | i < 10 | i + 1) {\n  continue\n }\n ret 0\n}";
+
+        final String llvmIR = codeGen(code);
+
+        assertNotNull(llvmIR);
+        assertTrue(llvmIR.contains("for.inc.2:"), llvmIR);
+    }
+
+    @Test
+    public void testBreakLeavesOnlyTheInnermostLoop() throws IOException {
+        final String code = """
+                proc main() {
+                  for (int32 i -> 0 | i < 3 | i + 1) {
+                    for (int32 j -> 0 | j < 3 | j + 1) {
+                      break
+                    }
+                  }
+                  ret 0
+                }""";
+
+        final String llvmIR = codeGen(code);
+
+        assertNotNull(llvmIR);
+        assertTrue(llvmIR.contains("br label %for.end.7"), llvmIR);
+        assertFalse(llvmIR.contains("br label %for.end.3"), llvmIR);
+    }
+
+    @Test
+    public void testBreakOutsideALoopFails() {
+        assertCodegenFails("proc main() {\n break\n ret 0\n}");
+    }
+
+    @Test
+    public void testContinueOutsideALoopFails() {
+        assertCodegenFails("proc main() {\n continue\n ret 0\n}");
+    }
+
+    @Test
+    public void testStatementAfterBreakFails() {
+        assertCodegenFails("""
+                proc main() {
+                  for (int32 i -> 0 | i < 3 | i + 1) {
+                    break
+                    int32 x -> 1
+                  }
+                  ret 0
+                }""");
+    }
+
+    @Test
     public void testEmptyMainReturnsZero() throws IOException {
         assertEquals("""
                 define dso_local i32 @main() {
