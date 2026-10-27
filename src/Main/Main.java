@@ -95,13 +95,17 @@ class CompilerCmd implements Callable<Integer> {
             // prepares the parser with the lexer and the name of the file (for linking reason)
             final Parser parser = new Parser(lexer);
 
-
-            final String llvmIR = Main.generateModule(parser, sourceFile.toPath());
+            // FIX: Attach target metadata before writing the IR files and invoking
+            // LLVM optimization and Clang compilation.
+            final String generatedIR = Main.generateModule(parser, sourceFile.toPath());
 
             // returns 1 (error) if the generation failed
-            if (llvmIR == null) {
-                return 1;
-            }
+            if (generatedIR == null) {
+                     return 1;
+                    }
+
+            // Writes the updated LLVM IR, including its target triple, to disk.
+            final String llvmIR = addTargetTriple(generatedIR);
 
             // creates a new file and writes the unoptimized IR
             final File irFile = new File(llFilePath);
@@ -125,6 +129,50 @@ class CompilerCmd implements Callable<Integer> {
             return 1;
         }
     }
+
+
+    
+/**
+ *  i have added this method to 
+ *  Prevents Clang's "-Woverride-module" warning by adding the
+ *  Existing target triples are preserved.
+ */
+private static String addTargetTriple(final String llvmIR) {
+    if (llvmIR.lines().anyMatch(line -> line.startsWith("target triple ="))) {
+        return llvmIR;
+    }
+
+    try {
+        final Process process = new ProcessBuilder("clang", "-dumpmachine")
+                .redirectErrorStream(true)
+                .start();
+
+        final String targetTriple = new String(
+                process.getInputStream().readAllBytes(),
+                StandardCharsets.UTF_8
+        ).trim();
+
+        final int exitCode = process.waitFor();
+
+        if (exitCode != 0 || !targetTriple.matches("[A-Za-z0-9_.-]+")) {
+            logger.warn("Could not determine target triple from Clang; leaving IR unchanged");
+            return llvmIR;
+        }
+
+        return "target triple = \"" + targetTriple + "\"\n\n" + llvmIR;
+
+    } catch (IOException e) {
+        logger.warn("Failed to determine target triple from Clang; leaving IR unchanged", e);
+        return llvmIR;
+
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        logger.warn("Interrupted while determining target triple; leaving IR unchanged", e);
+        return llvmIR;
+    }
+}
+
+
 
     /**
      * Run LLVM optimization passes using checks

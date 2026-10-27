@@ -77,10 +77,18 @@ public class TestEndToEnd {
         securePath(builder);
         final Process process = builder.start();
 
-        final String output = new String(process.getInputStream().readAllBytes());
-        final int status = process.waitFor();
-        assertEquals(0, status, output);
-        return directory.resolve(name);
+        
+final String output = new String(process.getInputStream().readAllBytes());
+final int status = process.waitFor();
+assertEquals(0, status, output);
+// Regression test for GitHub issue #167:
+// compilation must not emit Clang's target-triple override warning.
+assertFalse(
+        output.contains("overriding the module target triple"),
+        "Clang emitted a target-triple warning:\n" + output
+);
+return directory.resolve(name);
+
     }
 
     public int run(final Path binary) throws IOException, InterruptedException {
