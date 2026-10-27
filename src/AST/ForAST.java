@@ -3,6 +3,7 @@ package src.AST;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import src.Codegen.IRBuilder;
+import src.Codegen.Loop;
 import src.Codegen.SymbolTable;
 import src.Parser.ZType;
 
@@ -103,13 +104,22 @@ public final class ForAST extends ExprAST {
 
 
             builder.emitLabel(bodyLabel);
-            body.codeGen(builder);
+            builder.enterLoop(incLabel, endLabel);
+            final Loop loop;
+            try {
+                body.codeGen(builder);
+            } finally {
+                loop = builder.exitLoop();
+            }
             if (builder.hasFailed()) return null;
-            if (builder.isTerminated()) {
+            // the update is only needed when the body can reach it
+            if (builder.isTerminated() && !loop.isContinued()) {
                 builder.emitLabel(endLabel);
                 return null;
             }
-            builder.emitBr(incLabel);
+            if (!builder.isTerminated()) {
+                builder.emitBr(incLabel);
+            }
 
             builder.emitLabel(incLabel);
             final Value updateProduced = update.codeGen(builder);

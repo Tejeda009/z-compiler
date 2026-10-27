@@ -184,6 +184,29 @@ return directory.resolve(name);
     }
 
     @Test
+    public void testBreakAndContinueRun() throws IOException, InterruptedException {
+        if (OPT == null || CLANG == null) return;
+
+        final Path binary = compile("breakcontinue", """
+                proc main() {
+                    int32 sum -> 0
+                    for (int32 i -> 0 | i < 100 | i + 1) {
+                        if (i == 7) {
+                            break
+                        }
+                        if (i % 2 == 1) {
+                            continue
+                        }
+                        sum -> sum + i
+                    }
+                    ret sum
+                }
+                """);
+
+        assertEquals(12, run(binary));
+    }
+
+    @Test
     public void testModuloAndEqualityRun() throws IOException, InterruptedException {
         if (OPT == null || CLANG == null) return;
 

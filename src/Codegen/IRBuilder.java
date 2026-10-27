@@ -6,6 +6,8 @@ import src.AST.PrototypeAST;
 import src.AST.Value;
 import src.Parser.ZType;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -313,8 +315,27 @@ public class IRBuilder {
         labelCount = 0;
         irCode.setLength(0);
         registerTypes.clear();
+        loops.clear();
         terminated = false;
         failed = false;
+    }
+
+    /** the loops being generated, the innermost first */
+    private final Deque<Loop> loops = new ArrayDeque<>();
+
+    /** Starts a loop whose body can {@code break} or {@code continue}. */
+    public void enterLoop(final String continueLabel, final String breakLabel) {
+        loops.push(new Loop(continueLabel, breakLabel));
+    }
+
+    /** Ends the innermost loop. */
+    public Loop exitLoop() {
+        return loops.pop();
+    }
+
+    /** @return the innermost loop, or null outside of any loop */
+    public Loop currentLoop() {
+        return loops.peek();
     }
 
     /**

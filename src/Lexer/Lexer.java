@@ -41,6 +41,8 @@ public class Lexer {
         EIF("eif", -17),
         ELSE("else", -18),
         FOR("for", -19),
+        BREAK("break", -46),
+        CONTINUE("continue", -47),
         OPEN_PAR("(", -20),
         CLOSE_PAR(")", -21),
         OPEN_FUNC("{", -22),

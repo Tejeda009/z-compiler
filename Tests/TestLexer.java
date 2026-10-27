@@ -277,6 +277,15 @@ public class TestLexer {
     }
 
     @Test
+    void testBreakAndContinueTokens() throws IOException {
+        final Lexer lex = new Lexer(new ByteArrayInputStream(
+                "break continue".getBytes(StandardCharsets.UTF_8)));
+
+        assertEquals(Lexer.Tokens.BREAK.value, lex.getTok());
+        assertEquals(Lexer.Tokens.CONTINUE.value, lex.getTok());
+    }
+
+    @Test
     void testUnknownCharacterIsItsAsciiCode() throws IOException {
         final Lexer lex = new Lexer(new ByteArrayInputStream(
                 "@".getBytes(StandardCharsets.UTF_8)));
